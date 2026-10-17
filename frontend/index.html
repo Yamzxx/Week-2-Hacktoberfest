@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DealGuard | AI Negotiation Simulator for Freelancers</title>
+  <meta name="description" content="Private, local-first negotiation rehearsal tool for freelancers powered by open-weight models via Ollama. Rehearse difficult client objections, score boundaries, and generate negotiation plans.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-logo">
+        <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+        <span class="brand-name">DealGuard</span>
+      </div>
+      <span class="brand-tagline">Local-First Negotiation Rehearsal</span>
+    </div>
+
+    <div class="header-center">
+      <!-- Engine / Connection Status Pill -->
+      <div id="status-pill" class="status-pill status-checking" title="Connecting to local AI engine">
+        <span class="status-dot"></span>
+        <span id="status-text" class="status-text">Checking AI Engine...</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button id="btn-history-toggle" class="btn-ghost" title="View past rehearsal sessions">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>History (<span id="history-count">0</span>)</span>
+      </button>
+      <button id="btn-reset-nav" class="btn-ghost" title="Start over">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+          <path d="M3 12a9 9 0 0115.54-6.36L21 8M21 3v5h-5M21 12a9 9 0 01-15.54 6.36L3 16M3 21v-5h5"/>
+        </svg>
+        <span>Reset</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Step Progress Indicator -->
+  <nav class="steps-nav" aria-label="Negotiation Workflow Progress">
+    <div class="step-item active" data-screen="setup">
+      <span class="step-num">1</span>
+      <span class="step-label">Deal Setup</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step-item" data-screen="simulation">
+      <span class="step-num">2</span>
+      <span class="step-label">Live Simulation</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step-item" data-screen="scorepanel">
+      <span class="step-num">3</span>
+      <span class="step-label">Score Panel</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step-item" data-screen="finalplan">
+      <span class="step-num">4</span>
+      <span class="step-label">Negotiation Plan</span>
+    </div>
+  </nav>
+
+  <!-- Main Application Container -->
+  <main class="app-main">
+
+    <!-- ============================================== -->
+    <!-- SCREEN 1: SETUP SCREEN                         -->
+    <!-- ============================================== -->
+    <section id="screen-setup" class="screen-section active">
+      <div class="screen-card setup-card">
+        <div class="setup-header">
+          <div>
+            <h1 class="screen-title">Setup Your Negotiation Stance</h1>
+            <p class="screen-subtitle">Define your anchor price, walk-away floor, and non-negotiables before stepping into the arena.</p>
+          </div>
+          <button id="btn-load-demo" class="btn-demo-badge" type="button">
+            <span class="pulse-spark">⚡</span> Load Demo Scenario (₹8k vs ₹25k Project)
+          </button>
+        </div>
+
+        <form id="setup-form" class="setup-form" onsubmit="return false;">
+          <!-- Client Message -->
+          <div class="form-group">
+            <div class="label-row">
+              <label for="input-client-message">Client's Initial Message / Inquiry <span class="required">*</span></label>
+              <span class="hint">Paste the exact inquiry or objection you received</span>
+            </div>
+            <textarea id="input-client-message" rows="3" required placeholder="e.g. 'Hi, I need a 5-page website with booking, payments, and SEO. My budget is ₹8,000. I need it in 3 days.'"></textarea>
+          </div>
+
+          <!-- Service Offering -->
+          <div class="form-group">
+            <div class="label-row">
+              <label for="input-service">Your Service Offering <span class="required">*</span></label>
+              <span class="hint">What are you delivering?</span>
+            </div>
+            <input type="text" id="input-service" required placeholder="e.g. Full-Stack Web App Development (5 pages + booking + payments + SEO)">
+          </div>
+
+          <!-- Pricing Row -->
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="input-quoted-price">Quoted Anchor Price <span class="required">*</span></label>
+              <div class="input-affix-wrapper">
+                <select id="input-currency" class="currency-select">
+                  <option value="INR" selected>₹ INR</option>
+                  <option value="USD">$ USD</option>
+                  <option value="EUR">€ EUR</option>
+                  <option value="GBP">£ GBP</option>
+                </select>
+                <input type="number" id="input-quoted-price" required min="1" step="any" placeholder="25000">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="input-min-price">Minimum Acceptable (Floor) <span class="required">*</span></label>
+              <div class="input-affix-wrapper">
+                <span id="label-currency-prefix" class="currency-badge">₹</span>
+                <input type="number" id="input-min-price" required min="1" step="any" placeholder="18000">
+              </div>
+              <small class="field-subnote">Your strict walk-away rate</small>
+            </div>
+
+            <div class="form-group">
+              <label for="input-deadline">Target Timeline / Deadline <span class="required">*</span></label>
+              <input type="text" id="input-deadline" required placeholder="e.g. 7-10 business days">
+            </div>
+          </div>
+
+          <!-- Non-negotiables -->
+          <div class="form-group">
+            <div class="label-row">
+              <label>Strict Non-Negotiables <span class="required">*</span></label>
+              <span class="hint">Terms you will protect at all costs</span>
+            </div>
+            <div class="chip-input-container" id="non-negs-container">
+              <!-- Rendered chips go here -->
+              <div class="chip-input-wrapper">
+                <input type="text" id="input-new-non-neg" placeholder="Add non-negotiable and press Enter (e.g. 50% advance)...">
+                <button type="button" id="btn-add-non-neg" class="btn-chip-add">+ Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Action Footer -->
+          <div class="setup-actions">
+            <div class="privacy-callout">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              <span>100% Local & Private. All client messages and rates stay on your machine.</span>
+            </div>
+            <button type="button" id="btn-start-simulation" class="btn-primary btn-large">
+              <span>Start Rehearsal Arena</span>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- SCREENS 2 & 3: SIMULATION & LIVE SCORE PANEL   -->
+    <!-- ============================================== -->
+    <section id="screen-arena" class="screen-section">
+      <div class="arena-layout">
+        
+        <!-- LEFT: SCREEN 2 - SIMULATION CHAT THREAD -->
+        <div class="simulation-pane" id="pane-simulation">
+          <!-- Arena Sub-Header -->
+          <div class="pane-header">
+            <div class="deal-meta-summary">
+              <span class="meta-pill" id="badge-service">Website Build</span>
+              <span class="meta-pill price-pill" id="badge-prices">Quote: ₹25,000 | Min: ₹18,000</span>
+              <span class="meta-pill" id="badge-deadline">7 Days</span>
+            </div>
+            <div class="round-counter-pill" id="round-indicator">
+              Round <span id="current-round">1</span> of 5
+            </div>
+          </div>
+
+          <!-- Chat Thread -->
+          <div class="chat-thread" id="chat-thread">
+            <!-- Messages inserted dynamically -->
+          </div>
+
+          <!-- Quick Scenario Helper Buttons (for speedy demo testing) -->
+          <div class="quick-replies-tray">
+            <span class="quick-label">⚡ Quick Rehearsal Responses:</span>
+            <button type="button" class="btn-quick-reply" data-text="I can do ₹22,000 with a 50% advance, 7-day turnaround, and strictly two rounds of revisions. Hosting is billed separately.">
+              🛡️ Firm Counter (₹22k + 2 revs)
+            </button>
+            <button type="button" class="btn-quick-reply" data-text="Sure, I can accept ₹10,000 and include free hosting with unlimited revisions if we start now.">
+              ⚠️ Test Concession (Weak reply)
+            </button>
+            <button type="button" class="btn-quick-reply" data-text="My rate reflects production code with payments and QA. If ₹8k is your firm ceiling, we can do a single landing page without payment integrations.">
+              ✂️ Trade Scope for Price
+            </button>
+          </div>
+
+          <!-- Freelancer Reply Input Area -->
+          <div class="reply-input-box">
+            <div class="input-controls">
+              <textarea id="freelancer-reply-input" rows="3" placeholder="Type your negotiation reply here (defend your rate, guard your scope, or propose a milestone)..."></textarea>
+            </div>
+            <div class="input-actions-bar">
+              <span class="input-hint">Press <strong>Enter</strong> to send (Shift+Enter for newline)</span>
+              <button type="button" id="btn-send-reply" class="btn-primary">
+                <span>Send Response</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: SCREEN 3 - SCORE PANEL -->
+        <aside class="score-pane" id="pane-score">
+          <div class="score-header">
+            <div class="score-title-group">
+              <h2 class="score-pane-heading">DealGuard Coach</h2>
+              <span class="score-pane-sub">Real-time Turn Scoring & Defence Analysis</span>
+            </div>
+            <div id="deal-status-badge" class="badge-status status-ongoing">
+              Ongoing
+            </div>
+          </div>
+
+          <!-- 4 Main Live Metric Bars -->
+          <div class="metrics-grid">
+            <!-- Price Defence -->
+            <div class="metric-card" id="card-price-defence">
+              <div class="metric-top">
+                <span class="metric-name">Price Defence</span>
+                <span class="metric-value" id="val-price-defence">0/10</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-green" id="bar-price-defence" style="width: 0%"></div>
+              </div>
+              <span class="metric-desc">Anchoring quote & holding above minimum floor</span>
+            </div>
+
+            <!-- Scope Protection -->
+            <div class="metric-card" id="card-scope-protection">
+              <div class="metric-top">
+                <span class="metric-name">Scope Protection</span>
+                <span class="metric-value" id="val-scope-protection">0/10</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-blue" id="bar-scope-protection" style="width: 0%"></div>
+              </div>
+              <span class="metric-desc">Preventing unpaid feature additions & unlimited revisions</span>
+            </div>
+
+            <!-- Professional Tone -->
+            <div class="metric-card" id="card-prof-tone">
+              <div class="metric-top">
+                <span class="metric-name">Professional Tone</span>
+                <span class="metric-value" id="val-prof-tone">0/10</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-purple" id="bar-prof-tone" style="width: 0%"></div>
+              </div>
+              <span class="metric-desc">Assertive, polite, and value-focused demeanor</span>
+            </div>
+
+            <!-- Overcommitment Risk -->
+            <div class="metric-card" id="card-overcommit-risk">
+              <div class="metric-top">
+                <div class="metric-name-with-warn">
+                  <span class="metric-name">Overcommitment Risk</span>
+                  <span class="risk-tag" id="tag-overcommit">Low</span>
+                </div>
+                <span class="metric-value" id="val-overcommit-risk">0/10</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-amber" id="bar-overcommit-risk" style="width: 0%"></div>
+              </div>
+              <span class="metric-desc">Danger of agreeing to rushed deadlines or free work (10 = critical)</span>
+            </div>
+          </div>
+
+          <!-- Coach Feedback Card -->
+          <div class="coach-feedback-box">
+            <div class="coach-box-title">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+              <span>Coach Feedback</span>
+            </div>
+            <p id="coach-feedback-text" class="coach-text">
+              Enter your terms and start the rehearsal. The coach will evaluate every counter-reply you make.
+            </p>
+
+            <div id="suggested-reply-container" class="suggested-reply-box" style="display: none;">
+              <div class="suggested-header">
+                <span>💡 Tactical Suggested Improvement:</span>
+                <button type="button" id="btn-use-suggested" class="btn-text-action">Use This Reply</button>
+              </div>
+              <p id="suggested-reply-text" class="suggested-text"></p>
+            </div>
+          </div>
+
+          <!-- Finish / Generate Plan Button -->
+          <div class="score-actions">
+            <button type="button" id="btn-generate-plan" class="btn-success btn-block">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+              </svg>
+              <span>Generate Final Negotiation Plan</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- SCREEN 4: FINAL NEGOTIATION PLAN               -->
+    <!-- ============================================== -->
+    <section id="screen-plan" class="screen-section">
+      <div class="plan-wrapper">
+        <!-- Plan Header Banner -->
+        <div class="plan-banner">
+          <div class="plan-banner-content">
+            <div class="badge-plan-ready">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              <span>Negotiation Strategy Ready</span>
+            </div>
+            <h1 class="plan-title">Your Custom Negotiation Playbook</h1>
+            <p class="plan-subtitle" id="plan-deal-summary">
+              Strategic summary of leverage, recommended boundaries, and immediate next steps before you reply to the client.
+            </p>
+          </div>
+          <div class="plan-banner-actions">
+            <button type="button" id="btn-copy-plan" class="btn-ghost">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+              </svg>
+              <span id="copy-plan-text">Copy Full Plan</span>
+            </button>
+            <button type="button" id="btn-save-plan" class="btn-ghost">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
+              <span>Saved Locally</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Average Scores Overview Ribbon -->
+        <div class="scores-ribbon" id="plan-scores-ribbon">
+          <div class="ribbon-stat">
+            <span class="ribbon-val" id="avg-price-def">0.0</span>
+            <span class="ribbon-label">Avg Price Defence</span>
+          </div>
+          <div class="ribbon-stat">
+            <span class="ribbon-val" id="avg-scope-prot">0.0</span>
+            <span class="ribbon-label">Avg Scope Protection</span>
+          </div>
+          <div class="ribbon-stat">
+            <span class="ribbon-val" id="avg-prof-tone">0.0</span>
+            <span class="ribbon-label">Avg Professional Tone</span>
+          </div>
+          <div class="ribbon-stat">
+            <span class="ribbon-val" id="avg-overcommit">0.0</span>
+            <span class="ribbon-label">Overcommitment Risk</span>
+          </div>
+        </div>
+
+        <!-- 4 Core Pillars Grid -->
+        <div class="plan-grid">
+          
+          <!-- Pillar 1: Recommended Price Card -->
+          <div class="plan-card highlight-card">
+            <div class="card-icon price-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8M12 18V6"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <span class="card-category">Recommended Anchor Rate</span>
+              <div class="price-display">
+                <span class="currency-sign" id="plan-currency">₹</span>
+                <span class="price-num" id="plan-recommended-price">22,000</span>
+              </div>
+              <p class="card-note" id="plan-price-rationale">
+                Protects your minimum floor with healthy buffer for final round closing.
+              </p>
+            </div>
+          </div>
+
+          <!-- Pillar 2: Boundaries to State in Writing -->
+          <div class="plan-card">
+            <div class="card-icon boundary-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <span class="card-category">Boundaries to State in Writing</span>
+              <ul class="boundary-list" id="plan-boundaries-list">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Pillar 3: Risks Identified -->
+          <div class="plan-card">
+            <div class="card-icon risk-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <span class="card-category">Risks & Traps Identified</span>
+              <ul class="risk-list" id="plan-risks-list">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Pillar 4: Exact Tactical Next Action -->
+          <div class="plan-card wide-card action-card">
+            <div class="card-icon next-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <div class="action-header">
+                <div>
+                  <span class="card-category">Immediate Next Action</span>
+                  <h3 class="action-heading">Copy-Paste Message for Real Client</h3>
+                </div>
+                <button type="button" id="btn-copy-script" class="btn-secondary">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                  </svg>
+                  <span id="copy-script-text">Copy Script</span>
+                </button>
+              </div>
+              <div class="script-block" id="plan-next-action-text">
+                <!-- Ready to send script -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Plan Footer Actions -->
+        <div class="plan-footer-actions">
+          <button type="button" id="btn-rehearse-again" class="btn-primary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/>
+            </svg>
+            <span>Rehearse Another Negotiation</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Past History Drawer / Modal -->
+  <div id="history-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Saved Negotiation Sessions</h3>
+        <button id="btn-close-history" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body" id="history-list-container">
+        <!-- Rendered list of past sessions -->
+      </div>
+      <div class="modal-footer">
+        <button id="btn-clear-history" class="btn-danger-outline">Clear History</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
