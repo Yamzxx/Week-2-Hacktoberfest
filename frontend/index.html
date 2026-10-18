@@ -4,24 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DealGuard | AI Negotiation Simulator for Freelancers</title>
-  <meta name="description" content="Private, local-first negotiation rehearsal tool for freelancers powered by open-weight models via Ollama. Rehearse difficult client objections, score boundaries, and generate negotiation plans.">
+  <meta name="description" content="Playful, local-first negotiation rehearsal tool for freelancers and founders. Rehearse client objections, defend your floor price, and walk away with a ready-to-send counter offer.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Header / Navigation Bar -->
   <header class="app-header">
     <div class="header-left">
-      <div class="brand-logo">
-        <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="M9 12l2 2 4-4"/>
-        </svg>
-        <span class="brand-name">DealGuard</span>
-      </div>
-      <span class="brand-tagline">Local-First Negotiation Rehearsal</span>
+      <a href="#screen-setup" class="brand-logo" id="brand-home-link" aria-label="DealGuard Home">
+        <div class="logo-icon-wrapper">
+          <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+          <span class="logo-sparkle">✨</span>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-name">DealGuard</span>
+          <span class="brand-badge">PRO SIMULATOR</span>
+        </div>
+      </a>
+      <span class="brand-tagline">AI Flight Simulator for Client Negotiations</span>
     </div>
 
     <div class="header-center">
@@ -33,41 +39,67 @@
     </div>
 
     <div class="header-right">
-      <button id="btn-history-toggle" class="btn-ghost" title="View past rehearsal sessions">
+      <button id="btn-history-toggle" class="btn-ghost" title="View past rehearsal sessions" type="button">
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
           <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <span>History (<span id="history-count">0</span>)</span>
       </button>
-      <button id="btn-reset-nav" class="btn-ghost" title="Start over">
+      <button id="btn-reset-nav" class="btn-ghost" title="Start over" type="button">
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
           <path d="M3 12a9 9 0 0115.54-6.36L21 8M21 3v5h-5M21 12a9 9 0 01-15.54 6.36L3 16M3 21v-5h5"/>
         </svg>
         <span>Reset</span>
       </button>
+      <a href="#setup-workspace-anchor" id="nav-cta-rehearse" class="btn-nav-primary">
+        <span>Rehearse Deal</span>
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
     </div>
   </header>
 
   <!-- Step Progress Indicator -->
   <nav class="steps-nav" aria-label="Negotiation Workflow Progress">
-    <div class="step-item active" data-screen="setup">
-      <span class="step-num">1</span>
-      <span class="step-label">Deal Setup</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step-item" data-screen="simulation">
-      <span class="step-num">2</span>
-      <span class="step-label">Live Simulation</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step-item" data-screen="scorepanel">
-      <span class="step-num">3</span>
-      <span class="step-label">Score Panel</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step-item" data-screen="finalplan">
-      <span class="step-num">4</span>
-      <span class="step-label">Negotiation Plan</span>
+    <div class="steps-nav-inner">
+      <div class="step-item active" data-screen="setup" tabindex="0" role="button">
+        <span class="step-num">1</span>
+        <div class="step-meta">
+          <span class="step-label">Deal Setup</span>
+          <span class="step-sub">Define Your Stance</span>
+        </div>
+      </div>
+      <div class="step-divider">
+        <span class="divider-line"></span>
+      </div>
+      <div class="step-item" data-screen="simulation" tabindex="0" role="button">
+        <span class="step-num">2</span>
+        <div class="step-meta">
+          <span class="step-label">Live Arena</span>
+          <span class="step-sub">Rehearse Pushback</span>
+        </div>
+      </div>
+      <div class="step-divider">
+        <span class="divider-line"></span>
+      </div>
+      <div class="step-item" data-screen="scorepanel" tabindex="0" role="button">
+        <span class="step-num">3</span>
+        <div class="step-meta">
+          <span class="step-label">Coach Score</span>
+          <span class="step-sub">Defense Metrics</span>
+        </div>
+      </div>
+      <div class="step-divider">
+        <span class="divider-line"></span>
+      </div>
+      <div class="step-item" data-screen="finalplan" tabindex="0" role="button">
+        <span class="step-num">4</span>
+        <div class="step-meta">
+          <span class="step-label">Negotiation Plan</span>
+          <span class="step-sub">Ready Script</span>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -75,101 +107,422 @@
   <main class="app-main">
 
     <!-- ============================================== -->
-    <!-- SCREEN 1: SETUP SCREEN                         -->
+    <!-- SCREEN 1: LANDING & SETUP SCREEN               -->
     <!-- ============================================== -->
     <section id="screen-setup" class="screen-section active">
-      <div class="screen-card setup-card">
-        <div class="setup-header">
-          <div>
-            <h1 class="screen-title">Setup Your Negotiation Stance</h1>
-            <p class="screen-subtitle">Define your anchor price, walk-away floor, and non-negotiables before stepping into the arena.</p>
+
+      <!-- HERO SECTION: Premium & Playful Product Landing -->
+      <section class="landing-hero" id="landing-hero">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-icon">🛡️</span>
+            <span>Local AI Negotiation Rehearsal for Freelancers & Founders</span>
           </div>
-          <button id="btn-load-demo" class="btn-demo-badge" type="button">
-            <span class="pulse-spark">⚡</span> Load Demo Scenario (₹8k vs ₹25k Project)
-          </button>
-        </div>
+          
+          <h1 class="hero-title">
+            Rehearse client pushback.<br>
+            <span class="hero-title-highlight">Defend your rates.</span> Win on your terms.
+          </h1>
+          
+          <p class="hero-subtitle">
+            Never compromise under pressure again. DealGuard lets you practice difficult objections, hold your walk-away floor, and protect scope with an AI sparring partner before you hit send in real life.
+          </p>
 
-        <form id="setup-form" class="setup-form" onsubmit="return false;">
-          <!-- Client Message -->
-          <div class="form-group">
-            <div class="label-row">
-              <label for="input-client-message">Client's Initial Message / Inquiry <span class="required">*</span></label>
-              <span class="hint">Paste the exact inquiry or objection you received</span>
-            </div>
-            <textarea id="input-client-message" rows="3" required placeholder="e.g. 'Hi, I need a 5-page website with booking, payments, and SEO. My budget is ₹8,000. I need it in 3 days.'"></textarea>
-          </div>
-
-          <!-- Service Offering -->
-          <div class="form-group">
-            <div class="label-row">
-              <label for="input-service">Your Service Offering <span class="required">*</span></label>
-              <span class="hint">What are you delivering?</span>
-            </div>
-            <input type="text" id="input-service" required placeholder="e.g. Full-Stack Web App Development (5 pages + booking + payments + SEO)">
-          </div>
-
-          <!-- Pricing Row -->
-          <div class="form-grid-3">
-            <div class="form-group">
-              <label for="input-quoted-price">Quoted Anchor Price <span class="required">*</span></label>
-              <div class="input-affix-wrapper">
-                <select id="input-currency" class="currency-select">
-                  <option value="INR" selected>₹ INR</option>
-                  <option value="USD">$ USD</option>
-                  <option value="EUR">€ EUR</option>
-                  <option value="GBP">£ GBP</option>
-                </select>
-                <input type="number" id="input-quoted-price" required min="1" step="any" placeholder="25000">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="input-min-price">Minimum Acceptable (Floor) <span class="required">*</span></label>
-              <div class="input-affix-wrapper">
-                <span id="label-currency-prefix" class="currency-badge">₹</span>
-                <input type="number" id="input-min-price" required min="1" step="any" placeholder="18000">
-              </div>
-              <small class="field-subnote">Your strict walk-away rate</small>
-            </div>
-
-            <div class="form-group">
-              <label for="input-deadline">Target Timeline / Deadline <span class="required">*</span></label>
-              <input type="text" id="input-deadline" required placeholder="e.g. 7-10 business days">
-            </div>
-          </div>
-
-          <!-- Non-negotiables -->
-          <div class="form-group">
-            <div class="label-row">
-              <label>Strict Non-Negotiables <span class="required">*</span></label>
-              <span class="hint">Terms you will protect at all costs</span>
-            </div>
-            <div class="chip-input-container" id="non-negs-container">
-              <!-- Rendered chips go here -->
-              <div class="chip-input-wrapper">
-                <input type="text" id="input-new-non-neg" placeholder="Add non-negotiable and press Enter (e.g. 50% advance)...">
-                <button type="button" id="btn-add-non-neg" class="btn-chip-add">+ Add</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Form Action Footer -->
-          <div class="setup-actions">
-            <div class="privacy-callout">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0110 0v4"/>
-              </svg>
-              <span>100% Local & Private. All client messages and rates stay on your machine.</span>
-            </div>
-            <button type="button" id="btn-start-simulation" class="btn-primary btn-large">
-              <span>Start Rehearsal Arena</span>
+          <div class="hero-actions">
+            <a href="#setup-workspace-anchor" id="hero-btn-start" class="btn-primary btn-hero">
+              <span>Start Rehearsing</span>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
+            </a>
+            <button id="hero-btn-sample" class="btn-secondary btn-hero" type="button">
+              <span class="btn-icon-spark">⚡</span>
+              <span>Try a Sample Deal</span>
             </button>
           </div>
-        </form>
+
+          <div class="hero-guarantees">
+            <div class="guarantee-item">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              <span>100% Local & Private</span>
+            </div>
+            <div class="guarantee-item">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>Zero Client Risk</span>
+            </div>
+            <div class="guarantee-item">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              <span>Live Defense Scoring</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Integrated Hero Editorial Illustration -->
+        <div class="hero-visual">
+          <div class="visual-card">
+            <!-- Bespoke SVG Negotiation Illustration -->
+            <svg class="hero-illustration-svg" viewBox="0 0 540 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Decorative Ambient Background Elements -->
+              <rect x="20" y="20" width="500" height="340" rx="24" fill="#FAF7F2" stroke="#EAE4D9" stroke-width="1.5"/>
+              <circle cx="470" cy="60" r="45" fill="rgba(240, 93, 61, 0.08)"/>
+              <circle cx="80" cy="300" r="60" fill="rgba(14, 110, 89, 0.08)"/>
+              
+              <!-- Subtle Grid Dots -->
+              <g opacity="0.25">
+                <circle cx="60" cy="60" r="2" fill="#718096"/>
+                <circle cx="90" cy="60" r="2" fill="#718096"/>
+                <circle cx="120" cy="60" r="2" fill="#718096"/>
+                <circle cx="60" cy="90" r="2" fill="#718096"/>
+                <circle cx="90" cy="90" r="2" fill="#718096"/>
+                <circle cx="120" cy="90" r="2" fill="#718096"/>
+              </g>
+
+              <!-- Central Versus Divider Graphic -->
+              <line x1="270" y1="50" x2="270" y2="330" stroke="#E2DACF" stroke-dasharray="4 4" stroke-width="1.5"/>
+
+              <!-- Client Avatar Group (Left) -->
+              <g class="client-avatar-group">
+                <circle cx="120" cy="110" r="32" fill="#F4EFE6" stroke="#DFD7CB" stroke-width="2"/>
+                <!-- Client Silhouette Face -->
+                <circle cx="120" cy="100" r="14" fill="#2D3748"/>
+                <path d="M96 134c0-13.255 10.745-24 24-24s24 10.745 24 24" fill="#4A5568"/>
+                <!-- Question mark badge -->
+                <circle cx="144" cy="90" r="11" fill="#F59E0B"/>
+                <text x="144" y="94" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+              </g>
+
+              <!-- Client Message Bubble -->
+              <g class="client-bubble-group">
+                <rect x="50" y="160" width="195" height="76" rx="14" fill="#FFFFFF" stroke="#E2D9CC" stroke-width="1.5" filter="drop-shadow(0 4px 12px rgba(0,0,0,0.04))"/>
+                <polygon points="120,154 114,160 126,160" fill="#FFFFFF"/>
+                <rect x="62" y="172" width="80" height="16" rx="4" fill="#FEF3C7"/>
+                <text x="68" y="184" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#B45309">⚠️ BUDGET PUSHBACK</text>
+                <text x="62" y="206" font-family="'Inter', sans-serif" font-size="11.5" font-weight="500" fill="#1A202C">"Can we do ₹8,000?"</text>
+                <text x="62" y="222" font-family="'Inter', sans-serif" font-size="10" font-weight="400" fill="#718096">"Another dev offered less."</text>
+              </g>
+
+              <!-- Freelancer Avatar Group (Right) -->
+              <g class="freelancer-avatar-group">
+                <circle cx="420" cy="110" r="32" fill="#E8F5F1" stroke="#B8E2D7" stroke-width="2"/>
+                <!-- Freelancer Silhouette Face -->
+                <circle cx="420" cy="100" r="14" fill="#0E6E59"/>
+                <path d="M396 134c0-13.255 10.745-24 24-24s24 10.745 24 24" fill="#13856D"/>
+                <!-- Shield badge -->
+                <circle cx="444" cy="90" r="11" fill="#10B981"/>
+                <path d="M444 85l3 2v3c0 2-3 4-3 4s-3-2-3-4v-3l3-2z" fill="#FFFFFF"/>
+              </g>
+
+              <!-- Freelancer Counter Bubble -->
+              <g class="freelancer-bubble-group">
+                <rect x="295" y="160" width="205" height="84" rx="14" fill="#0E6E59" filter="drop-shadow(0 8px 16px rgba(14,110,89,0.18))"/>
+                <polygon points="420,154 414,160 426,160" fill="#0E6E59"/>
+                <rect x="307" y="172" width="88" height="16" rx="4" fill="rgba(255,255,255,0.2)"/>
+                <text x="313" y="184" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#A7F3D0">🛡️ FIRM COUNTER</text>
+                <text x="307" y="206" font-family="'Inter', sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF">"Rate is ₹25k with QA."</text>
+                <text x="307" y="222" font-family="'Inter', sans-serif" font-size="10" font-weight="400" fill="#D1FAE5">"We can reduce scope for ₹18k."</text>
+                <text x="307" y="235" font-family="'Inter', sans-serif" font-size="9.5" font-weight="500" fill="#FCD34D">✓ 50% advance non-negotiable</text>
+              </g>
+
+              <!-- Floating Live Metric HUD Pills -->
+              <!-- Metric Pill 1: Price Defense -->
+              <g class="float-tag-1" transform="translate(60, 262)">
+                <rect width="170" height="42" rx="10" fill="#FFFFFF" stroke="#E2D9CC" stroke-width="1.2" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.06))"/>
+                <circle cx="20" cy="21" r="9" fill="#D1FAE5"/>
+                <path d="M17 21l2 2 4-4" stroke="#059669" stroke-width="1.8" stroke-linecap="round"/>
+                <text x="36" y="18" font-family="'Inter', sans-serif" font-size="10" font-weight="500" fill="#718096">Floor Protected</text>
+                <text x="36" y="32" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" fill="#0E6E59">₹18,000 Walk Floor</text>
+              </g>
+
+              <!-- Metric Pill 2: Live Coach Score -->
+              <g class="float-tag-2" transform="translate(310, 262)">
+                <rect width="180" height="42" rx="10" fill="#FFFFFF" stroke="#E2D9CC" stroke-width="1.2" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.06))"/>
+                <circle cx="20" cy="21" r="9" fill="#FEE2E2"/>
+                <text x="20" y="25" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="bold" fill="#EF4444" text-anchor="middle">⚡</text>
+                <text x="36" y="18" font-family="'Inter', sans-serif" font-size="10" font-weight="500" fill="#718096">Tactical Defense Score</text>
+                <text x="36" y="32" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" fill="#1A202C">9.2 / 10 (Strong)</text>
+              </g>
+
+              <!-- Top Floating Badge -->
+              <g class="float-tag-top" transform="translate(200, 36)">
+                <rect width="140" height="28" rx="14" fill="#F05D3D" filter="drop-shadow(0 3px 8px rgba(240,93,61,0.3))"/>
+                <text x="270" y="54" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">DealGuard Arena Active</text>
+              </g>
+            </svg>
+
+            <!-- Interactive Illustration Caption -->
+            <div class="visual-footer-bar">
+              <span class="pulse-indicator"></span>
+              <span class="visual-caption-text">Rehearse high-stakes counter offers before risking client relationships</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3-STEP VALUE STRIP -->
+      <section class="how-it-works-strip">
+        <div class="section-badge-center">
+          <span>HOW DEALGUARD WORKS</span>
+        </div>
+        <h2 class="section-heading-center">Three simple steps to unbreakable confidence</h2>
+        
+        <div class="steps-cards-grid">
+          <div class="step-card">
+            <div class="step-card-num">01</div>
+            <div class="step-card-icon step-icon-teal">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h3 class="step-card-title">Set Your Terms</h3>
+            <p class="step-card-desc">
+              Input the client inquiry, lock in your target quote, declare your walk-away floor, and specify non-negotiable boundaries.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card-num">02</div>
+            <div class="step-card-icon step-icon-coral">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+            </div>
+            <h3 class="step-card-title">Practice the Pushback</h3>
+            <p class="step-card-desc">
+              Spar against AI client pushback—lowball offers, scope expansion, and rushed timelines. Get real-time coach feedback every turn.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card-num">03</div>
+            <div class="step-card-icon step-icon-amber">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+              </svg>
+            </div>
+            <h3 class="step-card-title">Leave Prepared</h3>
+            <p class="step-card-desc">
+              Generate a synthesized negotiation playbook with recommended compromise rates and an exact, ready-to-copy client reply.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEAL SETUP WORKSPACE: 2-COLUMN EXPERIENCE (Form + Live Stance Card) -->
+      <div class="setup-workspace-container" id="setup-workspace-anchor">
+        <div class="workspace-layout">
+
+          <!-- COLUMN 1: INTERACTIVE SETUP FORM -->
+          <div class="screen-card setup-card">
+            <div class="setup-header">
+              <div class="setup-header-text">
+                <span class="workspace-pill">STEP 1 OF 4</span>
+                <h2 class="screen-title">Setup Your Negotiation Stance</h2>
+                <p class="screen-subtitle">Define your anchor price, walk-away floor, and non-negotiables before stepping into the arena.</p>
+              </div>
+              <button id="btn-load-demo" class="btn-demo-badge" type="button" title="Load an example ₹8k vs ₹25k client scenario">
+                <span class="pulse-spark">⚡</span>
+                <span>Load Demo Scenario (₹8k vs ₹25k)</span>
+              </button>
+            </div>
+
+            <form id="setup-form" class="setup-form" onsubmit="return false;">
+              <!-- Client Message -->
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="input-client-message">
+                    <span>Client's Initial Message / Inquiry</span>
+                    <span class="required">*</span>
+                  </label>
+                  <span class="hint">Paste the exact inquiry or objection you received</span>
+                </div>
+                <div class="textarea-wrapper">
+                  <textarea id="input-client-message" rows="3" required placeholder="e.g. 'Hi, I need a 5-page website with booking, payments, and SEO. My budget is ₹8,000. I need it in 3 days.'"></textarea>
+                </div>
+              </div>
+
+              <!-- Service Offering -->
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="input-service">
+                    <span>Your Service Offering</span>
+                    <span class="required">*</span>
+                  </label>
+                  <span class="hint">What are you delivering?</span>
+                </div>
+                <input type="text" id="input-service" required placeholder="e.g. Full-Stack Web App Development (5 pages + booking + payments + SEO)">
+              </div>
+
+              <!-- Pricing Row (3 Columns) -->
+              <div class="form-grid-3">
+                <div class="form-group">
+                  <label for="input-quoted-price">
+                    <span>Quoted Anchor Price</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-affix-wrapper">
+                    <select id="input-currency" class="currency-select" aria-label="Currency">
+                      <option value="INR" selected>₹ INR</option>
+                      <option value="USD">$ USD</option>
+                      <option value="EUR">€ EUR</option>
+                      <option value="GBP">£ GBP</option>
+                    </select>
+                    <input type="number" id="input-quoted-price" required min="1" step="any" placeholder="25000">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="input-min-price">
+                    <span>Minimum Acceptable (Floor)</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-affix-wrapper">
+                    <span id="label-currency-prefix" class="currency-badge">₹</span>
+                    <input type="number" id="input-min-price" required min="1" step="any" placeholder="18000">
+                  </div>
+                  <small class="field-subnote">Your strict walk-away rate</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="input-deadline">
+                    <span>Target Timeline</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" id="input-deadline" required placeholder="e.g. 7-10 business days">
+                </div>
+              </div>
+
+              <!-- Non-negotiables -->
+              <div class="form-group">
+                <div class="label-row">
+                  <label>
+                    <span>Strict Non-Negotiables</span>
+                    <span class="required">*</span>
+                  </label>
+                  <span class="hint">Terms you will protect at all costs</span>
+                </div>
+                <div class="chip-input-container" id="non-negs-container">
+                  <!-- Rendered chips go here -->
+                  <div class="chip-input-wrapper">
+                    <input type="text" id="input-new-non-neg" placeholder="Add non-negotiable and press Enter (e.g. 50% advance)...">
+                    <button type="button" id="btn-add-non-neg" class="btn-chip-add">+ Add</button>
+                  </div>
+                </div>
+                <!-- Quick add suggestions -->
+                <div class="quick-terms-row">
+                  <span class="quick-terms-label">Quick add:</span>
+                  <button type="button" class="btn-term-suggest" data-term="50% advance before start">+ 50% Advance</button>
+                  <button type="button" class="btn-term-suggest" data-term="Strictly 2 revision rounds">+ 2 Revision Rounds</button>
+                  <button type="button" class="btn-term-suggest" data-term="Hosting billed separately">+ Hosting Separately</button>
+                  <button type="button" class="btn-term-suggest" data-term="No weekend work">+ Business Days Only</button>
+                </div>
+              </div>
+
+              <!-- Form Action Footer -->
+              <div class="setup-actions">
+                <div class="privacy-callout">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                  </svg>
+                  <span>100% Local & Private. All client messages and rates stay on your machine.</span>
+                </div>
+                <button type="button" id="btn-start-simulation" class="btn-primary btn-large">
+                  <span>Start Rehearsal Arena</span>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- COLUMN 2: LIVE DEAL SUMMARY & STANCE CARD -->
+          <aside class="deal-live-preview-panel" aria-label="Live Deal Summary">
+            <div class="preview-card-sticky">
+              <div class="preview-card-header">
+                <div class="preview-title-group">
+                  <span class="preview-eyebrow">LIVE DEAL PROFILE</span>
+                  <h3 class="preview-heading">Your Negotiation Guardrails</h3>
+                </div>
+                <span class="preview-health-pill" id="live-stance-badge">
+                  <span class="stance-dot"></span>
+                  <span id="live-stance-text">Ready to Defend</span>
+                </span>
+              </div>
+
+              <!-- Pricing Comparison Box -->
+              <div class="preview-pricing-block">
+                <div class="pricing-stat-row">
+                  <div class="pricing-col">
+                    <span class="pricing-label">Quoted Anchor</span>
+                    <span class="pricing-amount amount-quoted" id="live-quoted-display">₹25,000</span>
+                  </div>
+                  <div class="pricing-arrow">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 12h14M13 5l7 7-7 7"/>
+                    </svg>
+                  </div>
+                  <div class="pricing-col">
+                    <span class="pricing-label">Walk-Away Floor</span>
+                    <span class="pricing-amount amount-floor" id="live-floor-display">₹18,000</span>
+                  </div>
+                </div>
+
+                <!-- Buffer Cushion Progress Track -->
+                <div class="pricing-buffer-wrapper">
+                  <div class="buffer-labels">
+                    <span>Negotiation Cushion</span>
+                    <span id="live-cushion-display">₹7,000 (28% buffer)</span>
+                  </div>
+                  <div class="buffer-track">
+                    <div class="buffer-fill" id="live-buffer-bar" style="width: 72%;"></div>
+                  </div>
+                  <small class="buffer-hint">Healthy cushion to offer tactical concessions without breaching your floor.</small>
+                </div>
+              </div>
+
+              <!-- Scope & Delivery Snapshot -->
+              <div class="preview-detail-group">
+                <div class="detail-row">
+                  <span class="detail-label">Service:</span>
+                  <span class="detail-val" id="live-service-display">Full-Stack Web App Development</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Delivery Timeline:</span>
+                  <span class="detail-val" id="live-timeline-display">7 business days</span>
+                </div>
+              </div>
+
+              <!-- Non-Negotiable Checklist Preview -->
+              <div class="preview-boundaries-group">
+                <span class="boundaries-heading">Active Boundaries to Protect:</span>
+                <ul class="live-boundaries-list" id="live-boundaries-checklist">
+                  <li><span class="check-icon">✓</span> 50% advance payment required</li>
+                  <li><span class="check-icon">✓</span> 7-day turnaround timeline</li>
+                  <li><span class="check-icon">✓</span> Revisions strictly limited to two rounds</li>
+                </ul>
+              </div>
+
+              <!-- Sparring Coach Tip Box -->
+              <div class="preview-coach-tip">
+                <div class="tip-icon">💡</div>
+                <div class="tip-body">
+                  <strong>Coach Stance Tip:</strong>
+                  <span>When the client attempts to push your price down, trade scope rather than cutting your rate for free.</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+        </div>
       </div>
     </section>
 
@@ -189,18 +542,19 @@
               <span class="meta-pill" id="badge-deadline">7 Days</span>
             </div>
             <div class="round-counter-pill" id="round-indicator">
-              Round <span id="current-round">1</span> of 5
+              <span class="round-dot"></span>
+              <span>Round <strong id="current-round">1</strong> of 5</span>
             </div>
           </div>
 
           <!-- Chat Thread -->
-          <div class="chat-thread" id="chat-thread">
+          <div class="chat-thread" id="chat-thread" role="log" aria-live="polite">
             <!-- Messages inserted dynamically -->
           </div>
 
-          <!-- Quick Scenario Helper Buttons (for speedy demo testing) -->
+          <!-- Quick Scenario Helper Buttons (for speedy rehearsal) -->
           <div class="quick-replies-tray">
-            <span class="quick-label">⚡ Quick Rehearsal Responses:</span>
+            <span class="quick-label">⚡ Quick Rehearsal Moves:</span>
             <button type="button" class="btn-quick-reply" data-text="I can do ₹22,000 with a 50% advance, 7-day turnaround, and strictly two rounds of revisions. Hosting is billed separately.">
               🛡️ Firm Counter (₹22k + 2 revs)
             </button>
@@ -230,11 +584,14 @@
         </div>
 
         <!-- RIGHT: SCREEN 3 - SCORE PANEL -->
-        <aside class="score-pane" id="pane-score">
+        <aside class="score-pane" id="pane-score" aria-label="DealGuard Coach Analysis">
           <div class="score-header">
             <div class="score-title-group">
-              <h2 class="score-pane-heading">DealGuard Coach</h2>
-              <span class="score-pane-sub">Real-time Turn Scoring & Defence Analysis</span>
+              <div class="coach-badge-row">
+                <span class="coach-avatar-small">🧠</span>
+                <h2 class="score-pane-heading">DealGuard Coach</h2>
+              </div>
+              <span class="score-pane-sub">Real-time Turn Scoring & Defense Analysis</span>
             </div>
             <div id="deal-status-badge" class="badge-status status-ongoing">
               Ongoing
@@ -316,6 +673,14 @@
             </div>
           </div>
 
+          <!-- Compact Boundaries Reminder in Arena -->
+          <div class="arena-boundaries-reminder">
+            <span class="reminder-label">🛡️ Your Guardrails in this session:</span>
+            <ul id="arena-boundaries-list" class="arena-boundaries-items">
+              <!-- Dynamically mirrored from state -->
+            </ul>
+          </div>
+
           <!-- Finish / Generate Plan Button -->
           <div class="score-actions">
             <button type="button" id="btn-generate-plan" class="btn-success btn-block">
@@ -371,20 +736,32 @@
         <!-- Average Scores Overview Ribbon -->
         <div class="scores-ribbon" id="plan-scores-ribbon">
           <div class="ribbon-stat">
-            <span class="ribbon-val" id="avg-price-def">0.0</span>
-            <span class="ribbon-label">Avg Price Defence</span>
+            <div class="ribbon-icon ribbon-icon-green">🎯</div>
+            <div>
+              <span class="ribbon-val" id="avg-price-def">0.0</span>
+              <span class="ribbon-label">Avg Price Defence</span>
+            </div>
           </div>
           <div class="ribbon-stat">
-            <span class="ribbon-val" id="avg-scope-prot">0.0</span>
-            <span class="ribbon-label">Avg Scope Protection</span>
+            <div class="ribbon-icon ribbon-icon-blue">🛡️</div>
+            <div>
+              <span class="ribbon-val" id="avg-scope-prot">0.0</span>
+              <span class="ribbon-label">Avg Scope Protection</span>
+            </div>
           </div>
           <div class="ribbon-stat">
-            <span class="ribbon-val" id="avg-prof-tone">0.0</span>
-            <span class="ribbon-label">Avg Professional Tone</span>
+            <div class="ribbon-icon ribbon-icon-purple">🤝</div>
+            <div>
+              <span class="ribbon-val" id="avg-prof-tone">0.0</span>
+              <span class="ribbon-label">Avg Professional Tone</span>
+            </div>
           </div>
           <div class="ribbon-stat">
-            <span class="ribbon-val" id="avg-overcommit">0.0</span>
-            <span class="ribbon-label">Overcommitment Risk</span>
+            <div class="ribbon-icon ribbon-icon-amber">⚠️</div>
+            <div>
+              <span class="ribbon-val" id="avg-overcommit">0.0</span>
+              <span class="ribbon-label">Overcommitment Risk</span>
+            </div>
           </div>
         </div>
 
@@ -490,14 +867,17 @@
   <div id="history-modal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 class="modal-title">Saved Negotiation Sessions</h3>
-        <button id="btn-close-history" class="btn-close">&times;</button>
+        <div class="modal-title-group">
+          <span class="modal-icon">📜</span>
+          <h3 class="modal-title">Saved Negotiation Sessions</h3>
+        </div>
+        <button id="btn-close-history" class="btn-close" aria-label="Close history modal">&times;</button>
       </div>
       <div class="modal-body" id="history-list-container">
         <!-- Rendered list of past sessions -->
       </div>
       <div class="modal-footer">
-        <button id="btn-clear-history" class="btn-danger-outline">Clear History</button>
+        <button id="btn-clear-history" class="btn-danger-outline" type="button">Clear History</button>
       </div>
     </div>
   </div>

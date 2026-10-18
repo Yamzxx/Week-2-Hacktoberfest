@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bindEvents();
   checkEngineStatus();
   updateHistoryBadge();
+  updateLiveDealSummary();
 });
 
 // =========================================================
@@ -264,6 +265,37 @@ function bindEvents() {
   elements.historyModal.addEventListener('click', (e) => {
     if (e.target === elements.historyModal) closeHistoryModal();
   });
+
+  // Real-time Live Deal Summary Listeners
+  [elements.inputClientMsg, elements.inputService, elements.inputQuoted, elements.inputMin, elements.inputDeadline].forEach(input => {
+    if (input) input.addEventListener('input', updateLiveDealSummary);
+  });
+  if (elements.inputCurrency) {
+    elements.inputCurrency.addEventListener('change', updateLiveDealSummary);
+  }
+
+  // Quick Terms Suggestion Buttons
+  document.querySelectorAll('.btn-term-suggest').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const term = btn.dataset.term;
+      if (term && !state.setup.non_negotiables.includes(term)) {
+        state.setup.non_negotiables.push(term);
+        renderNonNegChips();
+        updateLiveDealSummary();
+        showToast(`Added term: ${term}`);
+      }
+    });
+  });
+
+  // Hero Sample Deal Button
+  const heroSample = document.getElementById('hero-btn-sample');
+  if (heroSample) {
+    heroSample.addEventListener('click', () => {
+      loadDemoScenario();
+      const setupAnchor = document.getElementById('setup-workspace-anchor');
+      if (setupAnchor) setupAnchor.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
 }
 
 // =========================================================
@@ -285,6 +317,7 @@ function loadDemoScenario() {
     'Revisions strictly limited to two rounds'
   ];
   renderNonNegChips();
+  updateLiveDealSummary();
   showToast('⚡ Demo Scenario loaded (₹8k vs ₹25k Project)');
 }
 
@@ -293,6 +326,7 @@ function addNonNegChip() {
   if (val && !state.setup.non_negotiables.includes(val)) {
     state.setup.non_negotiables.push(val);
     renderNonNegChips();
+    updateLiveDealSummary();
     elements.inputNewNonNeg.value = '';
   }
 }
@@ -300,6 +334,7 @@ function addNonNegChip() {
 function removeNonNegChip(index) {
   state.setup.non_negotiables.splice(index, 1);
   renderNonNegChips();
+  updateLiveDealSummary();
 }
 
 function renderNonNegChips() {
@@ -320,6 +355,81 @@ function renderNonNegChips() {
   });
 }
 window.removeNonNegChip = removeNonNegChip;
+
+function updateLiveDealSummary() {
+  const cur = elements.inputCurrency ? elements.inputCurrency.value : 'INR';
+  const symMap = { 'INR': '₹', 'USD': '$', 'EUR': '€', 'GBP': '£' };
+  const sym = symMap[cur] || cur;
+  const quoted = parseFloat(elements.inputQuoted?.value) || 0;
+  const min = parseFloat(elements.inputMin?.value) || 0;
+  const service = elements.inputService?.value?.trim() || 'Custom Offering';
+  const deadline = elements.inputDeadline?.value?.trim() || 'Not specified';
+
+  const liveQuoted = document.getElementById('live-quoted-display');
+  const liveFloor = document.getElementById('live-floor-display');
+  const liveCushion = document.getElementById('live-cushion-display');
+  const liveBufferBar = document.getElementById('live-buffer-bar');
+  const liveService = document.getElementById('live-service-display');
+  const liveTimeline = document.getElementById('live-timeline-display');
+  const liveBoundaries = document.getElementById('live-boundaries-checklist');
+  const liveStanceBadge = document.getElementById('live-stance-badge');
+  const liveStanceText = document.getElementById('live-stance-text');
+
+  if (liveQuoted) liveQuoted.textContent = `${sym}${quoted.toLocaleString()}`;
+  if (liveFloor) liveFloor.textContent = `${sym}${min.toLocaleString()}`;
+  if (liveService) liveService.textContent = service;
+  if (liveTimeline) liveTimeline.textContent = deadline;
+
+  if (liveCushion && liveBufferBar) {
+    if (quoted > 0 && min > 0) {
+      if (min > quoted) {
+        liveCushion.textContent = 'Floor exceeds Quote!';
+        liveBufferBar.style.width = '100%';
+        liveBufferBar.style.background = '#ef4444';
+        if (liveStanceBadge) {
+          liveStanceBadge.className = 'preview-health-pill stance-risk';
+          if (liveStanceText) liveStanceText.textContent = 'Invalid Floor';
+        }
+      } else {
+        const buffer = quoted - min;
+        const pct = Math.round((buffer / quoted) * 100);
+        liveCushion.textContent = `${sym}${buffer.toLocaleString()} (${pct}% buffer)`;
+        const barPct = Math.min(100, Math.max(10, Math.round(((quoted - buffer) / quoted) * 100)));
+        liveBufferBar.style.width = `${barPct}%`;
+        liveBufferBar.style.background = '';
+        if (liveStanceBadge) {
+          liveStanceBadge.className = 'preview-health-pill';
+          if (liveStanceText) liveStanceText.textContent = 'Ready to Defend';
+        }
+      }
+    }
+  }
+
+  if (liveBoundaries) {
+    liveBoundaries.innerHTML = '';
+    state.setup.non_negotiables.forEach(term => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="check-icon">✓</span> <span>${escapeHtml(term)}</span>`;
+      liveBoundaries.appendChild(li);
+    });
+    if (state.setup.non_negotiables.length === 0) {
+      const li = document.createElement('li');
+      li.innerHTML = `<span style="color: var(--text-subtle); font-style: italic;">No non-negotiables added yet</span>`;
+      liveBoundaries.appendChild(li);
+    }
+  }
+
+  // Also mirror into arena boundaries list
+  const arenaList = document.getElementById('arena-boundaries-list');
+  if (arenaList) {
+    arenaList.innerHTML = '';
+    state.setup.non_negotiables.forEach(term => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="check-icon">🛡️</span> <span>${escapeHtml(term)}</span>`;
+      arenaList.appendChild(li);
+    });
+  }
+}
 
 function startSimulation() {
   const clientMsg = elements.inputClientMsg.value.trim();
@@ -372,6 +482,9 @@ function startSimulation() {
   elements.suggestedContainer.style.display = 'none';
   elements.dealStatusBadge.className = 'badge-status status-ongoing';
   elements.dealStatusBadge.textContent = 'Ongoing';
+
+  // Mirror boundaries into arena list
+  updateLiveDealSummary();
 
   navigateToScreen('simulation');
 }
